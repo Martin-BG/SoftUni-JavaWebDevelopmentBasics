@@ -7,7 +7,7 @@
 </head>
 <body>
 <h1>Contact Us</h1>
-<form>
+<form method="post">
     <div>
         <span>First Name:</span>
         <input type="text" name="first_name" placeholder="First Name" required/>
@@ -21,14 +21,12 @@
         <input type="email" name="email" placeholder="Email" required/>
     </div>
     <div>
-        <span>Town:</span>
-        <label>
-            <select name="town">
-                <option value="1">Sofia</option>
-                <option value="2">Plovdiv</option>
-                <option value="3">Varna</option>
-            </select>
-        </label>
+        <label for="town">Town:</label>
+        <select id="town" name="town">
+            <option value="1">Sofia</option>
+            <option value="2">Plovdiv</option>
+            <option value="3">Varna</option>
+        </select>
     </div>
     <input type="reset" value="Reset"/>
     <input type="submit" value="Submit"/>

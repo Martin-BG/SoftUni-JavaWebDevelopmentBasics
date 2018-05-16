@@ -1,9 +1,10 @@
 form {
     background: #eee;
     display: inline-block;
+    border: 2px solid darkgray;
 }
 
-form span {
+form span, label {
     display: inline-block;
     width: 80px;
     background: #EEE;
@@ -24,6 +25,6 @@ form input[type=submit], input[type=reset] {
     height: 30px;
 }
 
-input[type=submit]:hover, input[type=reset]:hover, input:hover {
+input[type=submit]:hover, input[type=reset]:hover, input[type=text]:hover {
     background-color: lightgray;
 }
