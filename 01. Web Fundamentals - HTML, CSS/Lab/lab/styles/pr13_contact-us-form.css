@@ -17,9 +17,13 @@ form input, select {
     box-sizing: border-box;
 }
 
-form input[type="submit"] {
-    display: block;
-    margin: 10px 0 12px 40px;
+form input[type=submit], input[type=reset] {
+    display: inline-block;
+    margin: 10px 0 12px 8px;
     width: 80px;
     height: 30px;
+}
+
+input[type=submit]:hover, input[type=reset]:hover, input:hover {
+    background-color: lightgray;
 }

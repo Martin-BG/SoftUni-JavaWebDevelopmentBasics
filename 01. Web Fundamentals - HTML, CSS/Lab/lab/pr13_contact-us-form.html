@@ -8,12 +8,12 @@
 <body>
 <h1>Contact Us</h1>
 <form>
-    <span>First name:</span>
-    <input type="text" name="first_name" placeholder="first name"/><br/>
-    <span>Last name:</span>
-    <input type="text" name="last_name" placeholder="last name"/><br/>
+    <span>First Name:</span>
+    <input type="text" name="first_name" placeholder="First Name" required/><br/>
+    <span>Last Name:</span>
+    <input type="text" name="last_name" placeholder="Last Name" required/><br/>
     <span>Email:</span>
-    <input type="email" name="email" placeholder="email"/><br/>
+    <input type="email" name="email" placeholder="Email" required/><br/>
     <span>Town:</span>
     <label>
         <select name="town">
@@ -22,7 +22,8 @@
             <option value="3">Varna</option>
         </select>
     </label><br/>
-    <input type="submit" value="Submit" align="center"/>
+    <input type="reset" value="Reset"/>
+    <input type="submit" value="Submit"/>
 </form>
 </body>
 </html>
