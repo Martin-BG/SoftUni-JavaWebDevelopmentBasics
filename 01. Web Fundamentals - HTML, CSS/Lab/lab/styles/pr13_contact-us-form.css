@@ -1,9 +1,10 @@
 form {
     background: #eee;
     display: inline-block;
+    border: 2px solid darkgray;
 }
 
-form span {
+form span, label {
     display: inline-block;
     width: 80px;
     background: #EEE;
@@ -17,9 +18,13 @@ form input, select {
     box-sizing: border-box;
 }
 
-form input[type="submit"] {
-    display: block;
-    margin: 10px 0 12px 40px;
+form input[type=submit], input[type=reset] {
+    display: inline-block;
+    margin: 10px 0 12px 8px;
     width: 80px;
     height: 30px;
+}
+
+input[type=text]:hover, input[type=email]:hover {
+    background-color: lightgray;
 }
