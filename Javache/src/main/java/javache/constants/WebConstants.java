@@ -1,4 +1,4 @@
-package javache;
+package javache.constants;
 
 public final class WebConstants {
 

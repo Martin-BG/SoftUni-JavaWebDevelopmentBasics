@@ -1,4 +1,4 @@
-package javache;
+package javache.server;
 
 public class RequestHandler {
     public byte[] handleRequest(final String requestContent) {

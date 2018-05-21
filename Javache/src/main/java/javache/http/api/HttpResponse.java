@@ -1,4 +1,4 @@
-package javache.http;
+package javache.http.api;
 
 import java.util.Map;
 
