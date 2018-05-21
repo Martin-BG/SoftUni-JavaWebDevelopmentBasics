@@ -1,5 +1,7 @@
 package javache.http.api;
 
+import javache.http.enums.HttpMethod;
+
 import java.util.Map;
 
 public interface HttpRequest {
@@ -8,17 +10,9 @@ public interface HttpRequest {
 
     Map<String, String> getBodyParameters();
 
-    String getMethod();
-
-    void setMethod(String method);
+    HttpMethod getMethod();
 
     String getRequestUrl();
-
-    void setRequestUrl(String requestUrl);
-
-    void addHeader(String header, String value);
-
-    void addBodyParameter(String parameter, String value);
 
     boolean isResource();
 }
