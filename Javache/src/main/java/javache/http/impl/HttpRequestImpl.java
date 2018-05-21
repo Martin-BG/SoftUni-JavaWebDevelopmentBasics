@@ -1,5 +1,6 @@
 package javache.http.impl;
 
+import javache.constants.TextConstants;
 import javache.http.api.HttpRequest;
 import javache.http.enums.HttpMethod;
 
@@ -10,8 +11,8 @@ import java.util.Map;
 public final class HttpRequestImpl implements HttpRequest {
     private final HttpMethod method;
     private final String requestUrl;
-    private final HashMap<String, String> headers;
-    private final HashMap<String, String> bodyParameters;
+    private final Map<String, String> headers;
+    private final Map<String, String> bodyParameters;
     private final boolean isResource;
 
     public HttpRequestImpl(String requestContent) {
@@ -23,24 +24,24 @@ public final class HttpRequestImpl implements HttpRequest {
     }
 
     private HttpMethod parseMethod(String requestContent) {
-        return HttpMethod.valueOf(requestContent.split("\\s")[0].toUpperCase());
+        return HttpMethod.valueOf(requestContent.split(TextConstants.SEPARATOR_EMPTY_SPACE)[0].toUpperCase());
     }
 
     private String parseRequestUrl(String requestContent) {
-        return requestContent.split("\\s")[1];
+        return requestContent.split(TextConstants.SEPARATOR_EMPTY_SPACE)[1];
     }
 
-    private HashMap<String, String> parseHeaders(String requestContent) {
-        final HashMap<String, String> headers = new HashMap<>();
+    private Map<String, String> parseHeaders(String requestContent) {
+        final Map<String, String> headers = new HashMap<>();
 
-        String[] requestParams = requestContent.split("\\r\\n");
+        String[] requestParams = requestContent.split(TextConstants.SEPARATOR_LINE);
 
         for (final String header : requestParams) {
             if (header.isEmpty()) {
                 continue;
             }
 
-            final String[] headerKeyValuePair = header.split(":\\s");
+            final String[] headerKeyValuePair = header.split(TextConstants.SEPARATOR_HEADER_KVP);
 
             headers.putIfAbsent(headerKeyValuePair[0], headerKeyValuePair[1]);
         }
@@ -48,17 +49,17 @@ public final class HttpRequestImpl implements HttpRequest {
         return headers;
     }
 
-    private HashMap<String, String> parseBodyParameters(String requestContent) {
-        final HashMap<String, String> bodyParameters = new HashMap<>();
+    private Map<String, String> parseBodyParameters(String requestContent) {
+        final Map<String, String> bodyParameters = new HashMap<>();
 
         if (this.getMethod() == HttpMethod.POST) {
-            final String[] requestParams = requestContent.split("\\r\\n");
+            final String[] requestParams = requestContent.split(TextConstants.SEPARATOR_LINE);
 
             if (requestParams.length > this.headers.size() + 2) {
-                final String[] bodyParams = requestParams[this.headers.size() + 2].split("&");
+                final String[] bodyParams = requestParams[this.headers.size() + 2].split(TextConstants.SEPARATOR_BODY_PARAMS);
 
                 for (final String bodyParam : bodyParams) {
-                    final String[] bodyKeyValuePair = bodyParam.split("=");
+                    final String[] bodyKeyValuePair = bodyParam.split(TextConstants.SEPARATOR_BODY_KVP);
                     bodyParameters.putIfAbsent(bodyKeyValuePair[0], bodyKeyValuePair[1]);
                 }
             }
@@ -68,7 +69,7 @@ public final class HttpRequestImpl implements HttpRequest {
     }
 
     private boolean parseIsResource() {
-        return this.requestUrl.contains(".");
+        return this.requestUrl.contains(TextConstants.SEPARATOR_DOT);
     }
 
     @Override
