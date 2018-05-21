@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public final class Reader {
 
@@ -11,7 +12,8 @@ public final class Reader {
     }
 
     public static String readAllLines(final InputStream inputStream) throws IOException {
-        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        final BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
         final StringBuilder result = new StringBuilder();
 
