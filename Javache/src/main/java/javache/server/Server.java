@@ -1,12 +1,13 @@
 package javache.server;
 
+import javache.constants.MessagesConstants;
+import javache.constants.ServerConstants;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.FutureTask;
-
-import static javache.constants.WebConstants.SOCKET_TIMEOUT_MILLISECONDS;
 
 public class Server {
 
@@ -18,13 +19,14 @@ public class Server {
 
     public void run() throws IOException {
         try (final ServerSocket serverSocket = new ServerSocket(this.port)) {
+            System.out.println(MessagesConstants.LISTENING_MESSAGE + this.port);
 
-            serverSocket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
+            serverSocket.setSoTimeout(ServerConstants.SOCKET_TIMEOUT_MILLISECONDS);
 
             while (true) {
                 try (final Socket clientSocket = serverSocket.accept()) {
 
-                    clientSocket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
+                    clientSocket.setSoTimeout(ServerConstants.SOCKET_TIMEOUT_MILLISECONDS);
 
                     final ConnectionHandler connectionHandler =
                             new ConnectionHandler(clientSocket, new RequestHandler());
@@ -34,7 +36,7 @@ public class Server {
 
                     task.run();
                 } catch (SocketTimeoutException e) {
-                    System.out.println("Time Out"); // TODO - proper exception handling
+                    System.out.println(MessagesConstants.TIMEOUT_DETECTION_MESSAGE); // TODO - proper exception handling
                 }
             }
         }
