@@ -39,7 +39,20 @@ public class RequestHandler {
 
     private byte[] processPostRequest() {
         if ("/login".equals(this.httpRequest.getRequestUrl())) { // TODO - Just for demo, refactor
-            return this.ok(("Hello " + this.httpRequest.getBodyParameters().get("username")).getBytes(HttpConstants.SERVER_ENCODING));
+            final String sb = "<!DOCTYPE html>" +
+                    "<html lang=\"en\">" +
+                    "<head>" +
+                    "<meta charset=\"UTF-8\">" +
+                    "<title>Dodo</title>" +
+                    "</head>" +
+                    "<body>" +
+                    "<h3>Hello, " +
+                    this.httpRequest.getBodyParameters().get("username") +
+                    "!</h3><hr/>" +
+                    "<p><a href=\"/index\">To Home</a></p>" +
+                    "</body></html>";
+
+            return this.ok(sb.getBytes(HttpConstants.SERVER_ENCODING));
         }
 
         return this.processPageRequest(ServerConstants.INDEX_PAGE);
