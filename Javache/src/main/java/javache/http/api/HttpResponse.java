@@ -1,14 +1,16 @@
 package javache.http.api;
 
+import javache.http.enums.HttpStatus;
+
 import java.util.Map;
 
 public interface HttpResponse {
 
     Map<String, String> getHeaders();
 
-    int getStatusCode();
+    HttpStatus getHttpStatus();
 
-    void setStatusCode(int statusCode);
+    void setHttpStatus(HttpStatus httpStatus);
 
     byte[] getContent();
 
