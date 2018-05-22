@@ -12,7 +12,7 @@ import java.util.Map;
 public final class HttpResponseImpl implements HttpResponse {
 
     private HttpStatus httpStatus;
-    private Map<String, String> headers;
+    private final Map<String, String> headers;
     private byte[] content;
 
     public HttpResponseImpl() {
