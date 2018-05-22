@@ -23,7 +23,13 @@ public class ConnectionHandler extends Thread {
         try (final InputStream clientSocketInputStream = this.clientSocket.getInputStream();
              final OutputStream clientSocketOutputStream = this.clientSocket.getOutputStream()) {
 
-            final String requestContent = Reader.readAllLines(clientSocketInputStream);
+            String requestContent;
+            while (true) { // TODO - replace with proper threadsafe solution
+                requestContent = Reader.readAllLines(clientSocketInputStream);
+                if (requestContent.length() > 0) {
+                    break;
+                }
+            }
 
             final byte[] responseContent = this.requestHandler.handleRequest(requestContent);
 
