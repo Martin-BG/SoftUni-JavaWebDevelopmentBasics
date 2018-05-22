@@ -4,15 +4,14 @@ import javache.constants.HttpConstants;
 import javache.http.api.HttpResponse;
 import javache.http.enums.HttpStatus;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class HttpResponseImpl implements HttpResponse {
 
-    private HttpStatus httpStatus;
     private final Map<String, String> headers;
+    private HttpStatus httpStatus;
     private byte[] content;
 
     public HttpResponseImpl() {
@@ -34,7 +33,7 @@ public final class HttpResponseImpl implements HttpResponse {
 
         result.append(HttpConstants.SEPARATOR_LINE_RESPONSE);
 
-        return result.toString().getBytes(StandardCharsets.UTF_8);
+        return result.toString().getBytes(HttpConstants.SERVER_ENCODING);
     }
 
     @Override
@@ -53,12 +52,12 @@ public final class HttpResponseImpl implements HttpResponse {
     }
 
     @Override
-    public byte[] getContent() {
+    public byte[] getContent() { // TODO - exposes internal implementation!
         return this.content;
     }
 
     @Override
-    public void setContent(final byte[] content) {
+    public void setContent(final byte[] content) {  // TODO - exposes internal implementation!
         this.content = content;
     }
 
