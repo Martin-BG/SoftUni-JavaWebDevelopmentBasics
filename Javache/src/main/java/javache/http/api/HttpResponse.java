@@ -19,4 +19,6 @@ public interface HttpResponse {
     byte[] getBytes();
 
     void addHeader(String header, String value);
+
+    void addCookie(String name, String value);
 }

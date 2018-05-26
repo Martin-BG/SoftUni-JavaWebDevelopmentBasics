@@ -21,6 +21,11 @@ public final class HttpConstants {
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String CONTENT_DISPOSITION = "Content-Disposition";
     public static final String INLINE_CONTENT_DISPOSITION = "inline";
+    public static final String COOKIE = "Cookie";
+    public static final String SEPARATOR_COOKIES = "; ";
+    public static final String SEPARATOR_COOKIE_KVP = "=";
+    public static final String COOKIE_RESPONSE_NAME = "Set-Cookie: ";
+    public static final String COOKIE_DELETE = "deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
 
     private HttpConstants() {
     }

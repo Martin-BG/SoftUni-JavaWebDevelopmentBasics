@@ -10,6 +10,8 @@ public interface HttpRequest {
 
     Map<String, String> getBodyParameters();
 
+    Map<String, HttpCookie> getCookies();
+
     HttpMethod getMethod();
 
     String getRequestUrl();

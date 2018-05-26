@@ -1,6 +1,7 @@
 package javache.http.impl;
 
 import javache.constants.HttpConstants;
+import javache.http.api.HttpCookie;
 import javache.http.api.HttpRequest;
 import javache.http.enums.HttpMethod;
 
@@ -13,6 +14,7 @@ public final class HttpRequestImpl implements HttpRequest {
     private final String requestUrl;
     private final Map<String, String> headers;
     private final Map<String, String> bodyParameters;
+    private final Map<String, HttpCookie> cookies;
     private final boolean isResource;
 
     public HttpRequestImpl(final String requestContent) {
@@ -21,6 +23,26 @@ public final class HttpRequestImpl implements HttpRequest {
         this.headers = this.parseHeaders(requestContent);
         this.bodyParameters = this.parseBodyParameters(requestContent);
         this.isResource = this.parseIsResource();
+        this.cookies = this.parseCookies();
+    }
+
+    private Map<String, HttpCookie> parseCookies() {
+        final Map<String, HttpCookie> cookies = new HashMap<>();
+
+        final String cookiesHeader = this.headers.get(HttpConstants.COOKIE);
+
+        if (cookiesHeader == null) {
+            return cookies;
+        }
+
+        String[] allCookies = cookiesHeader.split(HttpConstants.SEPARATOR_COOKIES);
+
+        for (final String cookie : allCookies) {
+            String[] cookieKVP = cookie.split(HttpConstants.SEPARATOR_COOKIE_KVP);
+            cookies.putIfAbsent(cookieKVP[0], new HttpCookieImpl(cookieKVP[0], cookieKVP[1]));
+        }
+
+        return cookies;
     }
 
     private HttpMethod parseMethod(final String requestContent) {
@@ -80,6 +102,11 @@ public final class HttpRequestImpl implements HttpRequest {
     @Override
     public Map<String, String> getBodyParameters() {
         return Collections.unmodifiableMap(this.bodyParameters);
+    }
+
+    @Override
+    public Map<String, HttpCookie> getCookies() {
+        return Collections.unmodifiableMap(this.cookies);
     }
 
     @Override

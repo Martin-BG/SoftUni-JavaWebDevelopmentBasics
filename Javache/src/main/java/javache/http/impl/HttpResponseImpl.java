@@ -1,22 +1,26 @@
 package javache.http.impl;
 
 import javache.constants.HttpConstants;
+import javache.http.api.HttpCookie;
 import javache.http.api.HttpResponse;
 import javache.http.enums.HttpStatus;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class HttpResponseImpl implements HttpResponse {
 
     private final Map<String, String> headers;
+    private final Map<String, HttpCookie> cookies;
     private HttpStatus httpStatus;
     private byte[] content;
 
     public HttpResponseImpl() {
         this.content = new byte[0];
         this.headers = new HashMap<>();
+        this.cookies = new HashMap<>();
     }
 
     private byte[] getHeadersBytes() {
@@ -28,6 +32,17 @@ public final class HttpResponseImpl implements HttpResponse {
             result.append(header.getKey())
                     .append(HttpConstants.SEPARATOR_HEADER_KVP)
                     .append(header.getValue())
+                    .append(HttpConstants.SEPARATOR_LINE_RESPONSE);
+        }
+
+        if (!this.cookies.isEmpty()) {
+            result
+                    .append(HttpConstants.COOKIE_RESPONSE_NAME)
+                    .append(this.cookies
+                            .values()
+                            .stream()
+                            .map(Object::toString)
+                            .collect(Collectors.joining(HttpConstants.SEPARATOR_COOKIES)))
                     .append(HttpConstants.SEPARATOR_LINE_RESPONSE);
         }
 
@@ -64,6 +79,11 @@ public final class HttpResponseImpl implements HttpResponse {
     @Override
     public void addHeader(final String header, final String value) {
         this.headers.putIfAbsent(header, value);
+    }
+
+    @Override
+    public void addCookie(final String name, final String value) {
+        this.cookies.putIfAbsent(name, new HttpCookieImpl(name, value));
     }
 
     @Override
