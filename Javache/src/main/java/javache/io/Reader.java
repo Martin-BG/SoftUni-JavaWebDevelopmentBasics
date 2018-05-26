@@ -1,6 +1,6 @@
 package javache.io;
 
-import javache.constants.HttpConstants;
+import javache.constants.ServerConstants;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,7 @@ public final class Reader {
 
     public static String readAllLines(final InputStream inputStream) throws IOException {
         final BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(inputStream, HttpConstants.SERVER_ENCODING));
+                new InputStreamReader(inputStream, ServerConstants.SERVER_ENCODING));
 
         final StringBuilder result = new StringBuilder();
 
