@@ -1,6 +1,7 @@
 package javache;
 
 import javache.constants.ServerConstants;
+import javache.http.impl.HttpSessionStorageImpl;
 import javache.server.Server;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class StartUp {
     private static void start(final String[] args) {
         final int port = (args.length > 1) ? Integer.parseInt(args[1]) : ServerConstants.SERVER_PORT;
 
-        final Server server = new Server(port);
+        final Server server = new Server(port, new HttpSessionStorageImpl());
 
         try {
             server.run();
