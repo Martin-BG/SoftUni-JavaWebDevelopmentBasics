@@ -1,6 +1,7 @@
 package javache.http.impl;
 
 import javache.constants.HttpConstants;
+import javache.constants.ServerConstants;
 import javache.http.api.HttpCookie;
 import javache.http.api.HttpResponse;
 import javache.http.enums.HttpStatus;
@@ -48,7 +49,7 @@ public final class HttpResponseImpl implements HttpResponse {
 
         result.append(HttpConstants.SEPARATOR_LINE_RESPONSE);
 
-        return result.toString().getBytes(HttpConstants.SERVER_ENCODING);
+        return result.toString().getBytes(ServerConstants.SERVER_ENCODING);
     }
 
     @Override
