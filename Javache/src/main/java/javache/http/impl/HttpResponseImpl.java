@@ -83,7 +83,12 @@ public final class HttpResponseImpl implements HttpResponse {
 
     @Override
     public void addCookie(final String name, final String value) {
-        this.cookies.putIfAbsent(name, new HttpCookieImpl(name, value));
+        this.cookies.put(name, new HttpCookieImpl(name, value)); // TODO (note) - Existing cookies are replaced.
+    }
+
+    @Override
+    public void expireCookie(final String name) {
+        this.addCookie(name, HttpConstants.COOKIE_DELETE);
     }
 
     @Override

@@ -21,4 +21,6 @@ public interface HttpResponse {
     void addHeader(String header, String value);
 
     void addCookie(String name, String value);
+
+    void expireCookie(String name);
 }
