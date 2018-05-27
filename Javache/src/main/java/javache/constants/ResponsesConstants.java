@@ -2,6 +2,7 @@ package javache.constants;
 
 public final class ResponsesConstants {
 
+    // NOTE - Mutable arrays!
     public static final byte[] BAD_REQUEST_FOUND =
             "<h1>Error 400: Malformed Request...<h1/>".getBytes(ServerConstants.SERVER_ENCODING);
     public static final byte[] PAGE_OR_RESOURCE_NOT_FOUND =

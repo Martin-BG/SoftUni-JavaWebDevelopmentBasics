@@ -24,6 +24,11 @@ public final class CasebookConstants {
     public static final String PARAMETER_PASSWORD_CONFIRM = "passwordConfirm";
     public static final String PARAMETER_PASSWORD = "password";
     public static final String PARAMETER_EMAIL = "email";
+    public static final String PLACEHOLDER_USERS = "${users}";
+    public static final String FORMAT_USERS = "<p>%s<p/>";
+    public static final String PLACEHOLDER_EMAIL = "${email}";
+    public static final String PLACEHOLDER_PASSWORD = "${password}";
+    public static final String EMPTY_STRING = "";
 
     private CasebookConstants() {
     }

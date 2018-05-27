@@ -58,7 +58,7 @@ public class RequestHandler {
         if (index != -1 && index != 0) {
             return fileName.substring(index + 1);
         } else {
-            return "";
+            return CasebookConstants.EMPTY_STRING;
         }
     }
 
@@ -157,22 +157,22 @@ public class RequestHandler {
                     final StringBuilder sb = new StringBuilder();
                     Files.readAllLines(Paths.get(pagePath), ServerConstants.SERVER_ENCODING).forEach(sb::append);
                     String res = sb.toString();
-                    result = res.replace("${password}", password != null ? password : "")
-                            .replace("${email}", email != null ? email : "")
+                    result = res.replace(CasebookConstants.PLACEHOLDER_PASSWORD, password != null ? password : CasebookConstants.EMPTY_STRING)
+                            .replace(CasebookConstants.PLACEHOLDER_EMAIL, email != null ? email : CasebookConstants.EMPTY_STRING)
                             .getBytes(ServerConstants.SERVER_ENCODING);
                 } else if (page.toLowerCase().endsWith(CasebookConstants.CASEBOOK_USER_HOME_PAGE)) {
                     final String email = this.getParameterFromSession(session, CasebookConstants.PARAMETER_EMAIL);
                     final Collection<User> allUsers = this.userService.getAll();
                     final String users = allUsers.stream()
                             .filter(user -> !user.getName().equals(email))
-                            .map(user -> String.format("<h4>%s<h4/>", user.getName()))
-                            .collect(Collectors.joining(""));
+                            .map(user -> String.format(CasebookConstants.FORMAT_USERS, user.getName()))
+                            .collect(Collectors.joining(CasebookConstants.EMPTY_STRING));
 
                     final StringBuilder sb = new StringBuilder();
                     Files.readAllLines(Paths.get(pagePath), ServerConstants.SERVER_ENCODING)
                             .forEach(sb::append);
                     String res = sb.toString();
-                    result = res.replace("${users}", users)
+                    result = res.replace(CasebookConstants.PLACEHOLDER_USERS, users)
                             .getBytes(ServerConstants.SERVER_ENCODING);
                 } else {
                     result = Files.readAllBytes(Paths.get(pagePath));
