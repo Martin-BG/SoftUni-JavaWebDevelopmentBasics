@@ -246,7 +246,7 @@ public class RequestHandler {
 
                 this.httpResponse.addCookie(CasebookConstants.CASEBOOK_SESSION_KEY, newSession.getId());
 
-                return this.processPageRequest(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
             } else {
                 return this.badRequest(ResponsesConstants.BAD_REQUEST_FOUND);
             }
