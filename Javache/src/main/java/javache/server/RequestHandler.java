@@ -14,8 +14,12 @@ import javache.http.impl.HttpSessionImpl;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class RequestHandler {
 
@@ -145,7 +149,37 @@ public class RequestHandler {
         byte[] result;
 
         try {
-            result = Files.readAllBytes(Paths.get(pagePath));
+            final HttpSession session = this.getCurrentSession();
+            if (session != null) {
+                if (page.toLowerCase().endsWith(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE)) {
+                    final String password = this.getParameterFromSession(session, CasebookConstants.PARAMETER_PASSWORD);
+                    final String email = this.getParameterFromSession(session, CasebookConstants.PARAMETER_EMAIL);
+                    final StringBuilder sb = new StringBuilder();
+                    Files.readAllLines(Paths.get(pagePath), ServerConstants.SERVER_ENCODING).forEach(sb::append);
+                    String res = sb.toString();
+                    result = res.replace("${password}", password != null ? password : "")
+                            .replace("${email}", email != null ? email : "")
+                            .getBytes(ServerConstants.SERVER_ENCODING);
+                } else if (page.toLowerCase().endsWith(CasebookConstants.CASEBOOK_USER_HOME_PAGE)) {
+                    final String email = this.getParameterFromSession(session, CasebookConstants.PARAMETER_EMAIL);
+                    final Collection<User> allUsers = this.userService.getAll();
+                    final String users = allUsers.stream()
+                            .filter(user -> !user.getName().equals(email))
+                            .map(user -> String.format("<h4>%s<h4/>", user.getName()))
+                            .collect(Collectors.joining(""));
+
+                    final StringBuilder sb = new StringBuilder();
+                    Files.readAllLines(Paths.get(pagePath), ServerConstants.SERVER_ENCODING)
+                            .forEach(sb::append);
+                    String res = sb.toString();
+                    result = res.replace("${users}", users)
+                            .getBytes(ServerConstants.SERVER_ENCODING);
+                } else {
+                    result = Files.readAllBytes(Paths.get(pagePath));
+                }
+            } else {
+                result = Files.readAllBytes(Paths.get(pagePath));
+            }
         } catch (IOException e) {
             return this.internalServerError(ResponsesConstants.SOMETHING_WENT_WRONG);
         }
@@ -153,6 +187,34 @@ public class RequestHandler {
         this.httpResponse.addHeader(HttpConstants.CONTENT_TYPE, getMimeType(pagePath));
 
         return this.ok(result);
+    }
+
+    private String getParameterFromBody(final String parameter) {
+        String param = this.httpRequest.getBodyParameters().get(parameter);
+
+        if (param != null) {
+            try {
+                param = URLDecoder.decode(param, ServerConstants.SERVER_ENCODING.toString());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return param;
+    }
+
+    private String getParameterFromSession(final HttpSession session, final String parameter) {
+        String param = (String) session.getAttributes().get(parameter);
+
+        if (param != null) {
+            try {
+                param = URLDecoder.decode(param, ServerConstants.SERVER_ENCODING.toString());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return param;
     }
 
     private byte[] processPostRequest() {
@@ -167,8 +229,8 @@ public class RequestHandler {
                 return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
             }
 
-            final String email = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_EMAIL);
-            final String password = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_PASSWORD);
+            final String password = this.getParameterFromBody(CasebookConstants.PARAMETER_PASSWORD);
+            final String email = this.getParameterFromBody(CasebookConstants.PARAMETER_EMAIL);
 
             if (email != null && password != null) {
 
@@ -195,9 +257,9 @@ public class RequestHandler {
                 return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
             }
 
-            final String email = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_EMAIL);
-            final String password = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_PASSWORD);
-            final String passwordConfirm = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_PASSWORD_CONFIRM);
+            final String password = this.getParameterFromBody(CasebookConstants.PARAMETER_PASSWORD);
+            final String passwordConfirm = this.getParameterFromBody(CasebookConstants.PARAMETER_PASSWORD_CONFIRM);
+            final String email = this.getParameterFromBody(CasebookConstants.PARAMETER_EMAIL);
 
             if (email != null && password != null &&
                     password.equals(passwordConfirm) &&
@@ -255,14 +317,14 @@ public class RequestHandler {
                 return this.redirect(new byte[0], CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC);
             }
 
-            return this.processPageRequest(CasebookConstants.CASEBOOK_USER_HOME_PAGE); // TODO - DYNAMIC CONTENT!
+            return this.processPageRequest(CasebookConstants.CASEBOOK_USER_HOME_PAGE);
         }
         case CasebookConstants.CASEBOOK_USER_PROFILE_PAGE: {
             if (!isSessionValid) {
                 return this.redirect(new byte[0], CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC);
             }
 
-            return this.processPageRequest(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE); // TODO - DYNAMIC CONTENT!
+            return this.processPageRequest(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
         }
         default:
             return this.notFound(ResponsesConstants.PAGE_OR_RESOURCE_NOT_FOUND);
