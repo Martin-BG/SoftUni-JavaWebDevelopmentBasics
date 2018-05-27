@@ -27,4 +27,12 @@ public class UserService {
     public Collection<User> getAll() {
         return this.userRepository.getAll();
     }
+
+    public User validate(final String name, final String password) {
+        final User user = this.findByName(name);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
 }

@@ -82,6 +82,9 @@ public final class HttpRequestImpl implements HttpRequest {
 
                 for (final String bodyParam : bodyParams) {
                     final String[] bodyKeyValuePair = bodyParam.split(HttpConstants.SEPARATOR_BODY_KVP);
+                    if (bodyKeyValuePair.length != 2) { // NOTE - ignore incomplete parameters like [uesername=&password=pwd]
+                        continue;
+                    }
                     bodyParameters.putIfAbsent(bodyKeyValuePair[0], bodyKeyValuePair[1]);
                 }
             }

@@ -2,6 +2,7 @@ package javache.server;
 
 import javache.constants.MessagesConstants;
 import javache.constants.ServerConstants;
+import javache.database.services.UserService;
 import javache.http.api.HttpSessionStorage;
 
 import java.io.IOException;
@@ -14,10 +15,14 @@ public class Server {
 
     private final int port;
     private final HttpSessionStorage sessionStorage;
+    private final UserService userService;
 
-    public Server(final int port, final HttpSessionStorage sessionStorage) {
+    public Server(final int port,
+                  final HttpSessionStorage sessionStorage,
+                  final UserService userService) {
         this.port = port;
         this.sessionStorage = sessionStorage;
+        this.userService = userService;
     }
 
     public void run() throws IOException {
@@ -32,7 +37,8 @@ public class Server {
                     clientSocket.setSoTimeout(ServerConstants.SOCKET_TIMEOUT_MILLISECONDS);
 
                     final ConnectionHandler connectionHandler =
-                            new ConnectionHandler(clientSocket, new RequestHandler(this.sessionStorage));
+                            new ConnectionHandler(clientSocket,
+                                    new RequestHandler(this.sessionStorage, this.userService));
 
                     final FutureTask<?> task =
                             new FutureTask<>(connectionHandler, null);

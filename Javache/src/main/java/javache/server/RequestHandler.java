@@ -1,13 +1,16 @@
 package javache.server;
 
+import javache.constants.CasebookConstants;
 import javache.constants.HttpConstants;
-import javache.constants.MessagesConstants;
+import javache.constants.ResponsesConstants;
 import javache.constants.ServerConstants;
-import javache.http.api.HttpRequest;
-import javache.http.api.HttpResponse;
+import javache.database.entities.User;
+import javache.database.services.UserService;
+import javache.http.api.*;
 import javache.http.enums.HttpStatus;
 import javache.http.impl.HttpRequestImpl;
 import javache.http.impl.HttpResponseImpl;
+import javache.http.impl.HttpSessionImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +19,44 @@ import java.nio.file.Paths;
 
 public class RequestHandler {
 
+    private final HttpSessionStorage sessionStorage;
+    private final UserService userService;
     private HttpRequest httpRequest;
     private HttpResponse httpResponse;
+
+    public RequestHandler(final HttpSessionStorage sessionStorage,
+                          final UserService userService) {
+        this.sessionStorage = sessionStorage;
+        this.userService = userService;
+    }
+
+    private static String getMimeType(String fileName) { // TODO - replace with external library
+        switch (getFileExtension(fileName)) {
+        case "css":
+            return "text/css; charset=utf-8";
+        case "html":
+            return "text/html; charset=utf-8";
+        case "jpg":
+        case "jpeg":
+            return "image/jpeg";
+        case "png":
+            return "image/png";
+        case "ico":
+            return "image/x-icon";
+        default:
+            return "text/plain; charset=utf-8";
+        }
+    }
+
+    private static String getFileExtension(String fileName) {
+        final int index = fileName.lastIndexOf(HttpConstants.SEPARATOR_DOT);
+
+        if (index != -1 && index != 0) {
+            return fileName.substring(index + 1);
+        } else {
+            return "";
+        }
+    }
 
     public byte[] handleRequest(final String requestContent) {
         this.httpRequest = new HttpRequestImpl(requestContent);
@@ -34,79 +73,73 @@ public class RequestHandler {
             break;
         }
 
+        this.sessionStorage.refreshSessions();
+
         return result;
     }
 
-    private byte[] processPostRequest() {
-        if ("/login".equals(this.httpRequest.getRequestUrl())) { // TODO - Just for demo, refactor
-            final String sb = "<!DOCTYPE html>" +
-                    "<html lang=\"en\">" +
-                    "<head>" +
-                    "<meta charset=\"UTF-8\">" +
-                    "<title>Dodo</title>" +
-                    "</head>" +
-                    "<body>" +
-                    "<h3>Hello, " +
-                    this.httpRequest.getBodyParameters().get("username") +
-                    "!</h3><hr/>" +
-                    "<p><a href=\"/index\">To Home</a></p>" +
-                    "</body></html>";
+    private byte[] processResourceRequest(final String resourceUrl) {
 
-            return this.ok(sb.getBytes(HttpConstants.SERVER_ENCODING));
+        final String extension = getFileExtension(resourceUrl);
+
+        if ("html".equalsIgnoreCase(extension)) {   // TODO - refactor
+            final HttpSession session = getCurrentSession();
+            final boolean isSessionValid = session != null && session.isValid();
+
+            if (!isSessionValid) {
+                if (resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_LOGOUT_PAGE) ||
+                        resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_USER_HOME_PAGE) ||
+                        resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE) ||
+                        resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_LOGOUT_PAGE + ServerConstants.HTML_EXTENSION_AND_SEPARATOR) ||
+                        resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_USER_HOME_PAGE + ServerConstants.HTML_EXTENSION_AND_SEPARATOR) ||
+                        resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE + ServerConstants.HTML_EXTENSION_AND_SEPARATOR)) {
+                    return this.redirect(new byte[0], CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC);
+                }
+            } else if (resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC) ||
+                    resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_REGISTER_PAGE_STATIC) ||
+                    resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_LOGIN_PAGE) ||
+                    resourceUrl.toLowerCase().endsWith(CasebookConstants.CASEBOOK_LOGIN_PAGE + ServerConstants.HTML_EXTENSION_AND_SEPARATOR)) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
+            }
+
         }
 
-        return this.processPageRequest(ServerConstants.INDEX_PAGE);
-    }
-
-    private String getMimeType(File file) { // TODO - replace with external library
-        String fileName = file.getName();
-
-        if (fileName.endsWith("css")) {
-            return "text/css; charset=utf-8";
-        } else if (fileName.endsWith("html")) {
-            return "text/html; charset=utf-8";
-        } else if (fileName.endsWith("jpg") || fileName.endsWith("jpeg")) {
-            return "image/jpeg";
-        } else if (fileName.endsWith("png")) {
-            return "image/png";
-        } else if (fileName.endsWith("ico")) {
-            return "image/x-icon";
-        }
-
-        return "text/plain; charset=utf-8";
-    }
-
-    private byte[] processResourceRequest() {
-        final String assetPath = ServerConstants.ASSETS_FOLDER_PATH + this.httpRequest.getRequestUrl();
+        final String assetPath = extension.isEmpty() ?
+                CasebookConstants.CASEBOOK_ASSETS_PATH + resourceUrl :
+                CasebookConstants.CASEBOOK_ASSETS_PATH + extension + HttpConstants.SEPARATOR_FOLDER + resourceUrl;
 
         final File file = new File(assetPath);
 
         if (!file.exists() || file.isDirectory()) {
-            return this.notFound(MessagesConstants.ASSET_NOT_FOUND.getBytes(HttpConstants.SERVER_ENCODING));
+            return this.notFound(ResponsesConstants.PAGE_OR_RESOURCE_NOT_FOUND);
         }
 
         byte[] result;
 
         try {
-            result = Files.readAllBytes(Paths.get(assetPath));
+            result = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
-            return this.internalServerError(MessagesConstants.SOMETHING_WENT_WRONG.getBytes(HttpConstants.SERVER_ENCODING));
+            return this.internalServerError(ResponsesConstants.SOMETHING_WENT_WRONG);
         }
 
-        this.httpResponse.addHeader(HttpConstants.CONTENT_TYPE, this.getMimeType(file));
+        this.httpResponse.addHeader(HttpConstants.CONTENT_TYPE, getMimeType(assetPath));
         this.httpResponse.addHeader(HttpConstants.CONTENT_LENGTH, Integer.toString(result.length));
         this.httpResponse.addHeader(HttpConstants.CONTENT_DISPOSITION, HttpConstants.INLINE_CONTENT_DISPOSITION);
 
         return this.ok(result);
     }
 
-    private byte[] processPageRequest(String page) {
-        final String pagePath = ServerConstants.PAGES_FOLDER_PATH + page + ServerConstants.HTML_EXTENSION_AND_SEPARATOR;
+    private byte[] processPageRequest(final String page) {
+        if (page.contains(HttpConstants.SEPARATOR_DOT)) {
+            return this.processResourceRequest(page);
+        }
+
+        final String pagePath = CasebookConstants.CASEBOOK_PAGES_PATH + page + ServerConstants.HTML_EXTENSION_AND_SEPARATOR;
 
         final File file = new File(pagePath);
 
         if (!file.exists() || file.isDirectory()) {
-            return this.notFound(MessagesConstants.PAGE_NOT_FOUND.getBytes(HttpConstants.SERVER_ENCODING));
+            return processResourceRequest(page + ServerConstants.HTML_EXTENSION_AND_SEPARATOR); // NOTE - Search in assets too
         }
 
         byte[] result;
@@ -114,24 +147,133 @@ public class RequestHandler {
         try {
             result = Files.readAllBytes(Paths.get(pagePath));
         } catch (IOException e) {
-            return this.internalServerError(MessagesConstants.SOMETHING_WENT_WRONG.getBytes(HttpConstants.SERVER_ENCODING));
+            return this.internalServerError(ResponsesConstants.SOMETHING_WENT_WRONG);
         }
 
-        this.httpResponse.addHeader(HttpConstants.CONTENT_TYPE, this.getMimeType(file));
+        this.httpResponse.addHeader(HttpConstants.CONTENT_TYPE, getMimeType(pagePath));
 
         return this.ok(result);
     }
 
+    private byte[] processPostRequest() {
+        String requestUrl = this.httpRequest.getRequestUrl();
+        final HttpSession session = getCurrentSession();
+        final boolean isSessionValid = session != null && session.isValid();
+
+        switch (requestUrl) {
+        case CasebookConstants.CASEBOOK_LOGIN_PAGE:
+        case CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC: {
+            if (isSessionValid) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
+            }
+
+            final String email = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_EMAIL);
+            final String password = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_PASSWORD);
+
+            if (email != null && password != null) {
+
+                final User user = this.userService.validate(email, password);
+                if (user == null) { // Invalid credentials
+                    return this.badRequest(ResponsesConstants.BAD_REQUEST_FOUND);
+                }
+
+                HttpSession newSession = new HttpSessionImpl();
+                newSession.addAttribute(CasebookConstants.PARAMETER_EMAIL, email);
+                newSession.addAttribute(CasebookConstants.PARAMETER_PASSWORD, password);
+                this.sessionStorage.addSession(newSession);
+
+                this.httpResponse.addCookie(CasebookConstants.CASEBOOK_SESSION_KEY, newSession.getId());
+
+                return this.processPageRequest(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
+            } else {
+                return this.badRequest(ResponsesConstants.BAD_REQUEST_FOUND);
+            }
+        }
+        case CasebookConstants.CASEBOOK_REGISTER_PAGE:
+        case CasebookConstants.CASEBOOK_REGISTER_PAGE_STATIC: {
+            if (isSessionValid) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
+            }
+
+            final String email = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_EMAIL);
+            final String password = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_PASSWORD);
+            final String passwordConfirm = this.httpRequest.getBodyParameters().get(CasebookConstants.PARAMETER_PASSWORD_CONFIRM);
+
+            if (email != null && password != null &&
+                    password.equals(passwordConfirm) &&
+                    this.userService.registerUser(email, password)) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC);
+            }
+
+            return this.badRequest(ResponsesConstants.BAD_REQUEST_FOUND);
+        }
+        default: {
+            return this.notFound(ResponsesConstants.PAGE_OR_RESOURCE_NOT_FOUND);
+        }
+        }
+    }
+
     private byte[] processGetRequest() {
         if (this.httpRequest.isResource()) {
-            return this.processResourceRequest();
+            return this.processResourceRequest(this.httpRequest.getRequestUrl());
         }
 
-        if ("/".equals(httpRequest.getRequestUrl())) {
-            return this.processPageRequest(ServerConstants.INDEX_PAGE);
-        }
+        final HttpSession session = getCurrentSession();
+        final boolean isSessionValid = session != null && session.isValid();
 
-        return this.processPageRequest(this.httpRequest.getRequestUrl());
+        switch (this.httpRequest.getRequestUrl()) {
+        case CasebookConstants.CASEBOOK_INDEX_PAGE:
+        case CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC:
+        case CasebookConstants.CASEBOOK_ROOT_PAGE: {
+            if (isSessionValid) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
+            }
+
+            return this.processPageRequest(CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC);
+        }
+        case CasebookConstants.CASEBOOK_REGISTER_PAGE:
+        case CasebookConstants.CASEBOOK_REGISTER_PAGE_STATIC:
+        case CasebookConstants.CASEBOOK_LOGIN_PAGE:
+        case CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC: {
+            System.out.println();
+            return isSessionValid ?
+                    this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE) :
+                    this.badRequest(ResponsesConstants.BAD_REQUEST_FOUND);
+        }
+        case CasebookConstants.CASEBOOK_LOGOUT_PAGE: {
+            if (!isSessionValid) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
+            }
+
+            this.httpResponse.expireCookie(CasebookConstants.CASEBOOK_SESSION_KEY);
+            session.invalidate();
+
+            return this.processPageRequest(CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC);
+        }
+        case CasebookConstants.CASEBOOK_USER_HOME_PAGE: {
+            if (!isSessionValid) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC);
+            }
+
+            return this.processPageRequest(CasebookConstants.CASEBOOK_USER_HOME_PAGE); // TODO - DYNAMIC CONTENT!
+        }
+        case CasebookConstants.CASEBOOK_USER_PROFILE_PAGE: {
+            if (!isSessionValid) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_LOGIN_PAGE_STATIC);
+            }
+
+            return this.processPageRequest(CasebookConstants.CASEBOOK_USER_PROFILE_PAGE); // TODO - DYNAMIC CONTENT!
+        }
+        default:
+            return this.notFound(ResponsesConstants.PAGE_OR_RESOURCE_NOT_FOUND);
+        }
+    }
+
+    private HttpSession getCurrentSession() {
+        final HttpCookie cookie = this.httpRequest.getCookies().get(CasebookConstants.CASEBOOK_SESSION_KEY);
+        return cookie != null ?
+                this.sessionStorage.getById(cookie.getValue()) :
+                null;
     }
 
     private byte[] ok(final byte[] content) {

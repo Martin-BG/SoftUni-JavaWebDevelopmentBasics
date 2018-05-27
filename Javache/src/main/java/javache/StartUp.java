@@ -1,6 +1,7 @@
 package javache;
 
 import javache.constants.ServerConstants;
+import javache.database.services.UserService;
 import javache.http.impl.HttpSessionStorageImpl;
 import javache.server.Server;
 
@@ -13,9 +14,14 @@ public class StartUp {
     }
 
     private static void start(final String[] args) {
-        final int port = (args.length > 1) ? Integer.parseInt(args[1]) : ServerConstants.SERVER_PORT;
+        final int port = (args.length > 1) ?
+                Integer.parseInt(args[1]) :
+                ServerConstants.SERVER_PORT;
 
-        final Server server = new Server(port, new HttpSessionStorageImpl());
+        final Server server = new Server(
+                port,
+                new HttpSessionStorageImpl(),
+                new UserService());
 
         try {
             server.run();
