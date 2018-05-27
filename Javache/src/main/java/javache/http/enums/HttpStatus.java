@@ -1,6 +1,6 @@
 package javache.http.enums;
 
-import javache.constants.HttpConstants;
+import javache.constants.ServerConstants;
 
 public enum HttpStatus {
     OK(200, "OK"),
@@ -20,7 +20,7 @@ public enum HttpStatus {
     HttpStatus(final int statusCode, final String statusText) {
         this.statusCode = statusCode;
         this.statusPhrase = String.format("%d %s", statusCode, statusText);
-        this.statusResponse = String.format("%s %d %s", HttpConstants.SERVER_HTTP_VERSION, statusCode, statusText);
+        this.statusResponse = String.format("%s %d %s", ServerConstants.SERVER_HTTP_VERSION, statusCode, statusText);
     }
 
     public int getStatusCode() {
