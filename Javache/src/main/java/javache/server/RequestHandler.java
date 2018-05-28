@@ -291,6 +291,10 @@ public class RequestHandler {
                 return this.redirect(new byte[0], CasebookConstants.CASEBOOK_USER_PROFILE_PAGE);
             }
 
+            if (!this.httpRequest.getRequestUrl().equals(CasebookConstants.CASEBOOK_INDEX_PAGE)) {
+                return this.redirect(new byte[0], CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC);
+            }
+
             return this.processPageRequest(CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC);
         }
         case CasebookConstants.CASEBOOK_REGISTER_PAGE:
@@ -310,7 +314,7 @@ public class RequestHandler {
             this.httpResponse.expireCookie(CasebookConstants.CASEBOOK_SESSION_KEY);
             session.invalidate();
 
-            return this.processPageRequest(CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC);
+            return this.redirect(new byte[0], CasebookConstants.CASEBOOK_INDEX_PAGE_STATIC);
         }
         case CasebookConstants.CASEBOOK_USER_HOME_PAGE: {
             if (!isSessionValid) {
