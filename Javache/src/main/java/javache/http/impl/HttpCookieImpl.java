@@ -2,6 +2,8 @@ package javache.http.impl;
 
 import javache.http.api.HttpCookie;
 
+import static javache.constants.HttpConstants.SEPARATOR_COOKIE_KVP;
+
 public final class HttpCookieImpl implements HttpCookie {
 
     private final String name;
@@ -24,6 +26,6 @@ public final class HttpCookieImpl implements HttpCookie {
 
     @Override
     public String toString() {
-        return this.name + '=' + this.getValue();
+        return this.name + SEPARATOR_COOKIE_KVP + this.getValue();
     }
 }
