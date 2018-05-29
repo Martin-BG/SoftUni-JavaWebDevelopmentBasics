@@ -1,0 +1,9 @@
+.register-form {
+    width: 50%;
+}
+
+input {
+    float: right;
+    clear: both;
+    width: 50%;
+}
