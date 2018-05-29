@@ -1,0 +1,15 @@
+package org.softuni.database.util;
+
+public class RepositoryActionResultImpl implements RepositoryActionResult {
+    private Object result;
+
+    public RepositoryActionResultImpl(){ }
+
+    public Object getResult() {
+        return result;
+    }
+
+    public void setResult(Object result) {
+        this.result = result;
+    }
+}
