@@ -1,4 +1,4 @@
-package fdmc.serlets.cat;
+package fdmc.serlets.cats;
 
 import fdmc.data.Cat;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @WebServlet("/cats/create")
-public class CatCreateServlet extends HttpServlet {
+public class CatsCreateServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {

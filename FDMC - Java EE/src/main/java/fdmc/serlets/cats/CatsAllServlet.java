@@ -1,4 +1,4 @@
-package fdmc.serlets.cat;
+package fdmc.serlets.cats;
 
 import fdmc.data.Cat;
 

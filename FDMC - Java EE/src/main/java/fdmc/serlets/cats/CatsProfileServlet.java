@@ -1,4 +1,4 @@
-package fdmc.serlets.cat;
+package fdmc.serlets.cats;
 
 import fdmc.data.Cat;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @WebServlet("/cats/profile")
-public class CatProfileServlet extends HttpServlet {
+public class CatsProfileServlet extends HttpServlet {
 
     @Override
     @SuppressWarnings("unchecked")
