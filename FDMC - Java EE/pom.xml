@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>exercise</groupId>
-    <artifactId>exercise</artifactId>
+    <artifactId>FDMC</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <url>http://maven.apache.org</url>
@@ -38,12 +38,11 @@
             <version>4.0.1</version>
         </dependency>
 
-        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/javax/javaee-api &ndash;&gt;
-                <dependency>
-                    <groupId>javax</groupId>
-                    <artifactId>javaee-api</artifactId>
-                    <version>8.0</version>
-                </dependency>-->
-
+        <!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 </project>
