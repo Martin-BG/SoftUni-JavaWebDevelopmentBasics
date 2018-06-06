@@ -10,8 +10,8 @@
 <h1>Welcome to Fluffy Duffy Munchkin Cats!</h1>
 <h3>Navigate through the application using the links below!</h3>
 <hr/>
-<a href="/cats/create">Create Cat</a>
+<a href="<c:url value="/cats/create"/>">Create Cat</a>
 <br/>
-<a href="/cats/all">All Cats</a>
+<a href="<c:url value="/cats/all"/>">All Cats</a>
 </body>
 </html>
