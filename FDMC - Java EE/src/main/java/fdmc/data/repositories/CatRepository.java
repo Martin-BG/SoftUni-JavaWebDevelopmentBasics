@@ -2,10 +2,8 @@ package fdmc.data.repositories;
 
 import fdmc.data.models.Cat;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CatRepository {
     private Map<String, Cat> cats;
@@ -19,7 +17,11 @@ public class CatRepository {
     }
 
     public Collection<Cat> getAllCats() {
-        return Collections.unmodifiableCollection(this.cats.values());
+        return Collections.unmodifiableCollection(
+                this.cats.values()
+                        .stream()
+                        .sorted(Comparator.comparing(Cat::getViews).reversed())
+                        .collect(Collectors.toList()));
     }
 
     public boolean addCat(final Cat cat) {
