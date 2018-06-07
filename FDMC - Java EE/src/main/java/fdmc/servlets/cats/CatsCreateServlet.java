@@ -17,6 +17,14 @@ public class CatsCreateServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {
+        final User currentUser = ((UserRepository) this.getServletContext().getAttribute("users"))
+                .getByUsername(req.getSession().getAttribute("username").toString());
+
+        if (currentUser == null || !currentUser.isAdmin()) {
+            resp.sendRedirect("/users/login");
+            return;
+        }
+
         req.getRequestDispatcher("/WEB-INF/jsp/cats/create.jsp").forward(req, resp);
     }
 

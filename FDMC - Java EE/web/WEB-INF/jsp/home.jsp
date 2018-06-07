@@ -1,3 +1,4 @@
+<%@ page import="fdmc.data.repositories.UserRepository" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -18,8 +19,10 @@
 <br/>
 <a href="<c:url value="/users/register"/>">Register</a>
 <% } else { %>
+<% if (((UserRepository) application.getAttribute("users")).isAdmin((String) session.getAttribute("username"))) { %>
 <a href="<c:url value="/cats/create"/>">Create Cat</a>
 <br/>
+<% } %>
 <a href="<c:url value="/cats/all"/>">All Cats</a>
 <br/>
 <a href="<c:url value="/users/logout"/>">Logout</a>
