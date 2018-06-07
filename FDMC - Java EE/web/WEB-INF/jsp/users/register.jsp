@@ -19,6 +19,9 @@
     <label for="confirmPassword">Confirm Password:</label>
     <input type="password" id="confirmPassword" name="confirmPassword"/>
     <br/>
+    <label for="isAdmin">Administrator:</label>
+    <input type="checkbox" id="isAdmin" name="isAdmin" value="isAdmin" checked>
+    <br/>
     <button type="submit">Register</button>
 </form>
 <hr/>

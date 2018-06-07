@@ -20,16 +20,18 @@ public class UserRegisterServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-        String confirmPassword = req.getParameter("confirmPassword");
+        final String username = req.getParameter("username");
+        final String password = req.getParameter("password");
+        final String confirmPassword = req.getParameter("confirmPassword");
+        final UserRole userRole = req.getParameter("isAdmin") == null ? UserRole.USER : UserRole.ADMIN;
+
 
         if (password == null || username == null || !password.equals(confirmPassword)) {
             resp.sendRedirect("/users/register");
             return;
         }
 
-        User user = new User(username, password, UserRole.ADMIN); // TODO - role as input parameter!!!
+        User user = new User(username, password, userRole);
 
         ((UserRepository) this.getServletContext().getAttribute("users")).addUser(user);
 
