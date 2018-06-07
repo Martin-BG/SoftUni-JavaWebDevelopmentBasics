@@ -1,5 +1,5 @@
-<%@ page import="fdmc.data.Cat" %>
-<%@ page import="java.util.Map" %>
+<%@ page import="fdmc.data.models.Cat" %>
+<%@ page import="fdmc.data.repositories.CatRepository" %>
 <jsp:useBean id="urlProfile" class="java.lang.String"/>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -12,13 +12,13 @@
 <body>
 <h1>All Cats</h1>
 <hr/>
-<% Map<String, Cat> cats = (Map<String, Cat>) application.getAttribute("cats");%>
-<% if (cats.isEmpty()) { %>
+<% CatRepository cats = (CatRepository) application.getAttribute("cats");%>
+<% if (cats.getAllCats().isEmpty()) { %>
 <h3>
     There are no cats. <a href="<c:url value="/cats/create"/>">Create Some!</a>
 </h3>
 <% } else { %>
-<% for (Cat cat : cats.values()) { %>
+<% for (Cat cat : cats.getAllCats()) { %>
 <h3>
     <% urlProfile = "/cats/profile?catName=" + cat.getName(); %>
     <a href="<%=urlProfile %>"><%=cat.getName()%>

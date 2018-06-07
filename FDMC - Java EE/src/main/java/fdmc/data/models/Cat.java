@@ -1,4 +1,6 @@
-package fdmc.data;
+package fdmc.data.models;
+
+import java.util.Objects;
 
 public class Cat {
 
@@ -11,9 +13,9 @@ public class Cat {
                final String breed,
                final String color,
                final int numberOfLegs) {
-        this.name = name;
-        this.breed = breed;
-        this.color = color;
+        this.name = Objects.requireNonNull(name);
+        this.breed = Objects.requireNonNull(breed);
+        this.color = Objects.requireNonNull(color);
         this.numberOfLegs = numberOfLegs;
     }
 

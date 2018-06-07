@@ -1,6 +1,7 @@
 package fdmc.servlets.cats;
 
-import fdmc.data.Cat;
+import fdmc.data.models.Cat;
+import fdmc.data.repositories.CatRepository;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 @WebServlet("/cats/create")
 public class CatsCreateServlet extends HttpServlet {
@@ -19,7 +19,6 @@ public class CatsCreateServlet extends HttpServlet {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         final Cat cat = new Cat(
                 req.getParameter("name"),
@@ -27,8 +26,12 @@ public class CatsCreateServlet extends HttpServlet {
                 req.getParameter("color"),
                 Integer.parseInt(req.getParameter("legs")));
 
-        ((Map<String, Cat>) this.getServletContext().getAttribute("cats")).put(cat.getName(), cat);
+        final boolean isAdded = ((CatRepository) this.getServletContext().getAttribute("cats")).addCat(cat);
 
-        resp.sendRedirect("/cats/profile?catName=" + cat.getName());
+        if (isAdded) {
+            resp.sendRedirect("/cats/profile?catName=" + cat.getName());
+        } else {
+            resp.sendRedirect("/cars/create");
+        }
     }
 }
