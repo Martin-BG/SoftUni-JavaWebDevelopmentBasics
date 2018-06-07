@@ -23,6 +23,8 @@
 </h3>
 <h3>Creator: <%= cat.getCreator().getUsername()%>
 </h3>
+<h3>Views: <%= cat.getViews()%>
+</h3>
 <% } else { %>
 <h1>Cat, with name - <%=catName%> was not found.</h1>
 <% } %>

@@ -9,6 +9,7 @@ public class Cat {
     private final String color;
     private final int numberOfLegs;
     private final User creator;
+    private int views;
 
     public Cat(final String name,
                final String breed,
@@ -20,6 +21,7 @@ public class Cat {
         this.color = Objects.requireNonNull(color);
         this.numberOfLegs = numberOfLegs;
         this.creator = Objects.requireNonNull(creator);
+        this.views = 0;
     }
 
     public String getName() {
@@ -42,13 +44,23 @@ public class Cat {
         return this.creator;
     }
 
+    public int getViews() {
+        return this.views;
+    }
+
+    synchronized public void increaseViews() {
+        this.views++;
+    }
+
     @Override
     public String toString() {
         return "Cat{" +
-                "name='" + name + '\'' +
-                ", breed='" + breed + '\'' +
-                ", color='" + color + '\'' +
-                ", numberOfLegs=" + numberOfLegs +
+                "name='" + this.name + '\'' +
+                ", breed='" + this.breed + '\'' +
+                ", color='" + this.color + '\'' +
+                ", numberOfLegs=" + this.numberOfLegs +
+                ", creator=" + this.creator.getUsername() +
+                ", views=" + this.views +
                 '}';
     }
 }
