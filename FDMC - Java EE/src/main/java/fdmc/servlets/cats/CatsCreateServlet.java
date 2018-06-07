@@ -17,8 +17,7 @@ public class CatsCreateServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {
-        final User currentUser = ((UserRepository) this.getServletContext().getAttribute("users"))
-                .getByUsername(req.getSession().getAttribute("username").toString());
+        final User currentUser = getCurrentUser(req);
 
         if (currentUser == null || !currentUser.isAdmin()) {
             resp.sendRedirect("/users/login");
@@ -30,10 +29,9 @@ public class CatsCreateServlet extends HttpServlet {
 
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        final User creator = ((UserRepository) this.getServletContext().getAttribute("users"))
-                .getByUsername(req.getSession().getAttribute("username").toString());
+        final User creator = getCurrentUser(req);
 
-        if (creator == null) {
+        if (creator == null || !creator.isAdmin()) {
             resp.sendRedirect("/users/login");
             return;
         }
@@ -50,7 +48,12 @@ public class CatsCreateServlet extends HttpServlet {
         if (isAdded) {
             resp.sendRedirect("/cats/profile?catName=" + cat.getName());
         } else {
-            resp.sendRedirect("/cars/create");
+            resp.sendRedirect("/cats/create");
         }
+    }
+
+    private User getCurrentUser(final HttpServletRequest req) {
+        return ((UserRepository) this.getServletContext().getAttribute("users"))
+                .getByUsername(req.getSession().getAttribute("username").toString());
     }
 }

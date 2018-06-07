@@ -2,6 +2,7 @@
 <%@ page import="fdmc.data.repositories.CatRepository" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<jsp:useBean id="orderCat" class="java.lang.String"/>
 <html>
 <head>
     <title>FDMC</title>
@@ -25,6 +26,8 @@
 </h3>
 <h3>Views: <%= cat.getViews()%>
 </h3>
+<% orderCat = "/orders/order?catName=" + cat.getName(); %>
+<input type="button" onclick="location='<%=orderCat %>'" value="Order"/>
 <% } else { %>
 <h1>Cat, with name - <%=catName%> was not found.</h1>
 <% } %>

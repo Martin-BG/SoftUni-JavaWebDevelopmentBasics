@@ -1,6 +1,7 @@
 package fdmc.listeners;
 
 import fdmc.data.repositories.CatRepository;
+import fdmc.data.repositories.OrderRepository;
 import fdmc.data.repositories.UserRepository;
 
 import javax.servlet.ServletContextEvent;
@@ -12,5 +13,6 @@ public class ApplicationContextInitializer implements ServletContextListener {
     public void contextInitialized(final ServletContextEvent sce) {
         sce.getServletContext().setAttribute("cats", new CatRepository());
         sce.getServletContext().setAttribute("users", new UserRepository());
+        sce.getServletContext().setAttribute("orders", new OrderRepository());
     }
 }

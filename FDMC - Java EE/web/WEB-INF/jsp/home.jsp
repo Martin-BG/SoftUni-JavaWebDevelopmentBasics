@@ -22,6 +22,8 @@
 <% if (((UserRepository) application.getAttribute("users")).isAdmin((String) session.getAttribute("username"))) { %>
 <a href="<c:url value="/cats/create"/>">Create Cat</a>
 <br/>
+<a href="<c:url value="/orders/all"/>">All Orders</a>
+<br/>
 <% } %>
 <a href="<c:url value="/cats/all"/>">All Cats</a>
 <br/>
