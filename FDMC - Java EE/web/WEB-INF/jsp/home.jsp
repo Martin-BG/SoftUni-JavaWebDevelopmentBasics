@@ -8,10 +8,21 @@
 </head>
 <body>
 <h1>Welcome to Fluffy Duffy Munchkin Cats!</h1>
-<h3>Navigate through the application using the links below!</h3>
+<%=session.getAttribute("username") == null
+        ? "<h3>Login if you have an account, or Register if you don't!</h3>"
+        : "<h3>Navigate through the application using the links below!</h3>"
+%>
 <hr/>
+<% if (session.getAttribute("username") == null) { %>
+<a href="<c:url value="/users/login"/>">Login</a>
+<br/>
+<a href="<c:url value="/users/register"/>">Register</a>
+<% } else { %>
 <a href="<c:url value="/cats/create"/>">Create Cat</a>
 <br/>
 <a href="<c:url value="/cats/all"/>">All Cats</a>
+<br/>
+<a href="<c:url value="/users/logout"/>">Logout</a>
+<% } %>
 </body>
 </html>

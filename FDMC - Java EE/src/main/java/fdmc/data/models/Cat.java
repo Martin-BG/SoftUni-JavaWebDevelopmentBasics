@@ -8,15 +8,18 @@ public class Cat {
     private final String breed;
     private final String color;
     private final int numberOfLegs;
+    private final User creator;
 
     public Cat(final String name,
                final String breed,
                final String color,
-               final int numberOfLegs) {
+               final int numberOfLegs,
+               final User creator) {
         this.name = Objects.requireNonNull(name);
         this.breed = Objects.requireNonNull(breed);
         this.color = Objects.requireNonNull(color);
         this.numberOfLegs = numberOfLegs;
+        this.creator = Objects.requireNonNull(creator);
     }
 
     public String getName() {
@@ -33,6 +36,10 @@ public class Cat {
 
     public int getNumberOfLegs() {
         return this.numberOfLegs;
+    }
+
+    public User getCreator() {
+        return this.creator;
     }
 
     @Override
