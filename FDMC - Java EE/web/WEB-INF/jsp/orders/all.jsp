@@ -16,11 +16,11 @@
 
 <% OrderRepository orders = (OrderRepository) application.getAttribute("orders");%>
 <% for (Order order : orders.allOrders()) { %>
-<h4>Cat - <%= order.getCat().getName()%>
-</h4>
 <h4>Client: <%= order.getClient().getUsername()%>
 </h4>
-<h4>Made on: <%= order.getMadeOn().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))%>
+<h4>Cat: <%= order.getCat().getName()%>
+</h4>
+<h4>Made on: <%= order.getMadeOn().format(DateTimeFormatter.ofPattern("HH:mm:ss yyyy-MM-dd"))%>
 </h4>
 <hr/>
 <%} %>
