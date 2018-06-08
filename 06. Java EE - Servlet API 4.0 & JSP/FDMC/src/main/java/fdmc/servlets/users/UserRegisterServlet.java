@@ -30,7 +30,7 @@ public final class UserRegisterServlet extends HttpServlet {
         final String password = req.getParameter("password");
         final UserRole userRole = req.getParameter("isAdmin") == null ? UserRole.USER : UserRole.ADMIN;
 
-        User user = new User(username, password, userRole);
+        final User user = new User(username, password, userRole);
 
         final boolean isRegistered = ((UserRepository) this.getServletContext().getAttribute("users")).addUser(user);
 
