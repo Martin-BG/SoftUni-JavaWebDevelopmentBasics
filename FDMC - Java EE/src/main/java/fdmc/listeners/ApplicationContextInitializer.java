@@ -7,7 +7,7 @@ import fdmc.data.repositories.UserRepository;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-public class ApplicationContextInitializer implements ServletContextListener {
+public final class ApplicationContextInitializer implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent sce) {

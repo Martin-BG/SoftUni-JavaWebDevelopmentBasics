@@ -2,7 +2,7 @@ package fdmc.data.models;
 
 import java.util.Objects;
 
-public class Cat {
+public final class Cat {
 
     private final String name;
     private final String breed;

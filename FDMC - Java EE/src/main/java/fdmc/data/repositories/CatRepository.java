@@ -5,8 +5,9 @@ import fdmc.data.models.Cat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CatRepository {
-    private Map<String, Cat> cats;
+public final class CatRepository {
+
+    private final Map<String, Cat> cats;
 
     public CatRepository() {
         this.cats = new HashMap<>();

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/cats/profile")
-public class CatsProfileServlet extends HttpServlet {
+public final class CatProfileServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {

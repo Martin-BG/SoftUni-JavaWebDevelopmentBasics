@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/orders/all")
-public class OrdersAll extends HttpServlet {
+public final class OrdersAllServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
@@ -19,7 +19,7 @@ public class OrdersAll extends HttpServlet {
                 .getByUsername(req.getSession().getAttribute("username").toString());
 
         if (user == null || !user.isAdmin()) {
-            resp.sendRedirect("/users/login");
+            resp.sendRedirect("/");
             return;
         }
 

@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/users/register")
-public class UserRegisterServlet extends HttpServlet {
+public final class UserRegisterServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getRequestDispatcher("/WEB-INF/jsp/users/register.jsp").forward(req, resp);
@@ -20,21 +21,30 @@ public class UserRegisterServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        final String username = req.getParameter("username");
-        final String password = req.getParameter("password");
-        final String confirmPassword = req.getParameter("confirmPassword");
-        final UserRole userRole = req.getParameter("isAdmin") == null ? UserRole.USER : UserRole.ADMIN;
-
-
-        if (password == null || username == null || !password.equals(confirmPassword)) {
+        if (!this.isRequestValid(req)) {
             resp.sendRedirect("/users/register");
             return;
         }
 
+        final String username = req.getParameter("username");
+        final String password = req.getParameter("password");
+        final UserRole userRole = req.getParameter("isAdmin") == null ? UserRole.USER : UserRole.ADMIN;
+
         User user = new User(username, password, userRole);
 
-        ((UserRepository) this.getServletContext().getAttribute("users")).addUser(user);
+        final boolean isRegistered = ((UserRepository) this.getServletContext().getAttribute("users")).addUser(user);
 
-        resp.sendRedirect("/");
+        if (isRegistered) {
+            resp.sendRedirect("/users/login");
+        } else {
+            resp.sendRedirect("/users/register");
+        }
+    }
+
+    private boolean isRequestValid(final HttpServletRequest req) {
+        return req.getParameter("username") != null && !req.getParameter("username").isEmpty()
+                && req.getParameter("password") != null && !req.getParameter("password").isEmpty()
+                && req.getParameter("confirmPassword") != null && !req.getParameter("confirmPassword").isEmpty()
+                && req.getParameter("password").equals(req.getParameter("confirmPassword"));
     }
 }

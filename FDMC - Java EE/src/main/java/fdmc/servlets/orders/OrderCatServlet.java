@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/orders/order")
-public class OrderCatServlet extends HttpServlet {
+public final class OrderCatServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
@@ -24,12 +24,7 @@ public class OrderCatServlet extends HttpServlet {
         final Cat cat = ((CatRepository) this.getServletContext().getAttribute("cats"))
                 .getByName(req.getParameter("catName"));
 
-        if (orderedBy == null) {
-            resp.sendRedirect("/users/login");
-            return;
-        }
-
-        if (cat == null) {
+        if (orderedBy == null || cat == null) {
             resp.sendRedirect("/");
             return;
         }
@@ -41,7 +36,7 @@ public class OrderCatServlet extends HttpServlet {
         if (orderedBy.isAdmin()) {
             resp.sendRedirect("/orders/all");
         } else {
-            resp.sendRedirect("/");
+            resp.sendRedirect("/cats/all");
         }
     }
 }

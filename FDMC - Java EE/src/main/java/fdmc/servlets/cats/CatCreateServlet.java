@@ -13,14 +13,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/cats/create")
-public class CatsCreateServlet extends HttpServlet {
+public final class CatCreateServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {
-        final User currentUser = getCurrentUser(req);
+        final User currentUser = this.getCurrentUser(req);
 
         if (currentUser == null || !currentUser.isAdmin()) {
-            resp.sendRedirect("/users/login");
+            resp.sendRedirect("/");
             return;
         }
 
@@ -29,10 +29,15 @@ public class CatsCreateServlet extends HttpServlet {
 
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        final User creator = getCurrentUser(req);
+        final User creator = this.getCurrentUser(req);
 
         if (creator == null || !creator.isAdmin()) {
-            resp.sendRedirect("/users/login");
+            resp.sendRedirect("/");
+            return;
+        }
+
+        if (!this.isRequestValid(req)) {
+            resp.sendRedirect("/cats/create");
             return;
         }
 
@@ -48,12 +53,19 @@ public class CatsCreateServlet extends HttpServlet {
         if (isAdded) {
             resp.sendRedirect("/cats/profile?catName=" + cat.getName());
         } else {
-            resp.sendRedirect("/cats/create");
+            resp.sendRedirect("/");
         }
     }
 
     private User getCurrentUser(final HttpServletRequest req) {
         return ((UserRepository) this.getServletContext().getAttribute("users"))
-                .getByUsername(req.getSession().getAttribute("username").toString());
+                .getByUsername((String) req.getSession().getAttribute("username"));
+    }
+
+    private boolean isRequestValid(final HttpServletRequest req) {
+        return req.getParameter("name") != null && !req.getParameter("name").isEmpty()
+                && req.getParameter("breed") != null && !req.getParameter("breed").isEmpty()
+                && req.getParameter("color") != null && !req.getParameter("color").isEmpty()
+                && req.getParameter("legs") != null && req.getParameter("legs").matches("\\d+");
     }
 }

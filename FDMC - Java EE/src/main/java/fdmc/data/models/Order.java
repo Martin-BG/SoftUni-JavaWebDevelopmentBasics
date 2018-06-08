@@ -3,7 +3,8 @@ package fdmc.data.models;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Order {
+public final class Order {
+
     private final User client;
     private final Cat cat;
     private final LocalDateTime madeOn;

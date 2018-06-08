@@ -7,7 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/users/logout")
-public class UserLogoutServlet extends HttpServlet {
+public final class UserLogoutServlet extends HttpServlet {
+
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         req.getSession().invalidate();

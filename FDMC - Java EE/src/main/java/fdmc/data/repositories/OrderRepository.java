@@ -7,7 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 
-public class OrderRepository {
+public final class OrderRepository {
+
     private final Deque<Order> orders;
 
     public OrderRepository() {
