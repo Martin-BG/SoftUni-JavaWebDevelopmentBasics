@@ -22,8 +22,8 @@ public final class User {
         return this.password.equals(password);
     }
 
-    public boolean isAdmin() {
-        return this.role == UserRole.ADMIN;
+    public UserRole getRole() {
+        return this.role;
     }
 
     @Override

@@ -28,14 +28,4 @@ public final class UserRepository {
 
         return this.users.putIfAbsent(user.getUsername(), user) == null;
     }
-
-    public boolean isValidCredentials(final String username, final String password) {
-        final User user = this.getByUsername(username);
-        return user != null && user.isPasswordValid(password);
-    }
-
-    public boolean isAdmin(final String username) {
-        final User user = this.getByUsername(username);
-        return user != null && user.isAdmin();
-    }
 }
