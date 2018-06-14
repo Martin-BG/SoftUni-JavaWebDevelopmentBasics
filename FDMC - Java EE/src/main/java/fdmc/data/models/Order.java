@@ -2,6 +2,7 @@ package fdmc.data.models;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public final class Order {
 
@@ -10,8 +11,8 @@ public final class Order {
     private final LocalDateTime madeOn;
 
     public Order(final User client, final Cat cat) {
-        this.client = client;
-        this.cat = cat;
+        this.client = Objects.requireNonNull(client);
+        this.cat = Objects.requireNonNull(cat);
         this.madeOn = LocalDateTime.now();
     }
 
