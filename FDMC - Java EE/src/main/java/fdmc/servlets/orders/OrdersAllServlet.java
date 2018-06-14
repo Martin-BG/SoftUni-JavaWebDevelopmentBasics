@@ -1,7 +1,6 @@
 package fdmc.servlets.orders;
 
-import fdmc.data.models.User;
-import fdmc.data.repositories.UserRepository;
+import fdmc.util.LoggedUser;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,10 +14,7 @@ public final class OrdersAllServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-        final User user = ((UserRepository) this.getServletContext().getAttribute("users"))
-                .getByUsername((String) req.getSession().getAttribute("username"));
-
-        if (user == null || !user.isAdmin()) {
+        if (!LoggedUser.isAdmin(req)) {
             resp.sendRedirect("/");
             return;
         }

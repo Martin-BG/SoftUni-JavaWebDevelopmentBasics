@@ -2,6 +2,7 @@ package fdmc.servlets.users;
 
 import fdmc.data.models.User;
 import fdmc.data.repositories.UserRepository;
+import fdmc.util.LoggedUser;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,7 +16,7 @@ public final class UserLoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-        if (this.getCurrentUser(req) != null) {  // User already logged
+        if (LoggedUser.isPresent(req)) {
             resp.sendRedirect("/");
             return;
         }
@@ -25,30 +26,32 @@ public final class UserLoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        if (this.getCurrentUser(req) != null) {  // User already logged
+        if (LoggedUser.isPresent(req)) {
             resp.sendRedirect("/");
             return;
         }
 
+        final User user = this.login(req);
+
+        if (user == null) {
+            resp.sendRedirect("/users/login");
+        } else {
+            resp.sendRedirect("/");
+        }
+    }
+
+    private User login(final HttpServletRequest req) {
         final String username = req.getParameter("username");
         final String password = req.getParameter("password");
 
-        final boolean isValid = ((UserRepository)
-                this.getServletContext().getAttribute("users"))
-                .isValidCredentials(username, password);
+        final User user = ((UserRepository) this.getServletContext().getAttribute("users"))
+                .getByUsername(username);
 
-        if (!isValid) {
-            resp.sendRedirect("/users/login");
-            return;
+        if (user != null && user.isPasswordValid(password)) {
+            req.getSession().setAttribute("username", user.getUsername());
+            return user;
         }
 
-        req.getSession().setAttribute("username", username);
-
-        resp.sendRedirect("/");
-    }
-
-    private User getCurrentUser(final HttpServletRequest req) {
-        return ((UserRepository) this.getServletContext().getAttribute("users"))
-                .getByUsername((String) req.getSession().getAttribute("username"));
+        return null;
     }
 }

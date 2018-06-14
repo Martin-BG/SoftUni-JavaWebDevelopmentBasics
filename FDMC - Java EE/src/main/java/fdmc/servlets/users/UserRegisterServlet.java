@@ -26,19 +26,23 @@ public final class UserRegisterServlet extends HttpServlet {
             return;
         }
 
-        final String username = req.getParameter("username");
-        final String password = req.getParameter("password");
-        final UserRole userRole = req.getParameter("isAdmin") == null ? UserRole.USER : UserRole.ADMIN;
+        final User user = this.registerUser(req);
 
-        User user = new User(username, password, userRole);
-
-        final boolean isRegistered = ((UserRepository) this.getServletContext().getAttribute("users")).addUser(user);
-
-        if (isRegistered) {
+        if (user != null) {
             resp.sendRedirect("/users/login");
         } else {
             resp.sendRedirect("/users/register");
         }
+    }
+
+    private User registerUser(final HttpServletRequest req) {
+        final String username = req.getParameter("username");
+        final String password = req.getParameter("password");
+        final UserRole userRole = req.getParameter("isAdmin") == null ? UserRole.USER : UserRole.ADMIN;
+
+        final User user = new User(username, password, userRole);
+
+        return ((UserRepository) this.getServletContext().getAttribute("users")).addUser(user) ? user : null;
     }
 
     private boolean isRequestValid(final HttpServletRequest req) {

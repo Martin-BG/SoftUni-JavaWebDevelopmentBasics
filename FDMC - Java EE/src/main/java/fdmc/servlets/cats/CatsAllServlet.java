@@ -1,5 +1,7 @@
 package fdmc.servlets.cats;
 
+import fdmc.util.LoggedUser;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,11 @@ public final class CatsAllServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {
+        if (!LoggedUser.isPresent(req)) {
+            resp.sendRedirect("/");
+            return;
+        }
+
         req.getRequestDispatcher("/WEB-INF/jsp/cats/all.jsp").forward(req, resp);
     }
 }

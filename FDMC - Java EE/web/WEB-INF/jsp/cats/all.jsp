@@ -1,6 +1,6 @@
 <%@ page import="fdmc.data.models.Cat" %>
 <%@ page import="fdmc.data.repositories.CatRepository" %>
-<%@ page import="fdmc.data.repositories.UserRepository" %>
+<%@ page import="fdmc.util.LoggedUser" %>
 <jsp:useBean id="urlProfile" class="java.lang.String"/>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -17,7 +17,7 @@
 <% if (cats.getAllCats().isEmpty()) { %>
 <h3>
     There are no cats.
-    <% if (((UserRepository) application.getAttribute("users")).isAdmin((String) session.getAttribute("username"))) { %>
+    <% if (LoggedUser.isAdmin(request)) { %>
     <a href="<c:url value="/cats/create"/>"> Create Some!</a>
     <% } %>
 </h3>

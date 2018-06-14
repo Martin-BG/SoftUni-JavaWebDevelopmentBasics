@@ -1,9 +1,8 @@
 package fdmc.servlets.cats;
 
 import fdmc.data.models.Cat;
-import fdmc.data.models.User;
 import fdmc.data.repositories.CatRepository;
-import fdmc.data.repositories.UserRepository;
+import fdmc.util.LoggedUser;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,9 +16,7 @@ public final class CatCreateServlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException, ServletException {
-        final User currentUser = this.getCurrentUser(req);
-
-        if (currentUser == null || !currentUser.isAdmin()) {
+        if (!LoggedUser.isAdmin(req)) {
             resp.sendRedirect("/");
             return;
         }
@@ -29,9 +26,7 @@ public final class CatCreateServlet extends HttpServlet {
 
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        final User creator = this.getCurrentUser(req);
-
-        if (creator == null || !creator.isAdmin()) {
+        if (!LoggedUser.isAdmin(req)) {
             resp.sendRedirect("/");
             return;
         }
@@ -41,25 +36,25 @@ public final class CatCreateServlet extends HttpServlet {
             return;
         }
 
-        final Cat cat = new Cat(
-                req.getParameter("name"),
-                req.getParameter("breed"),
-                req.getParameter("color"),
-                Integer.parseInt(req.getParameter("legs")),
-                creator);
+        final Cat cat = this.createCat(req);
 
-        final boolean isAdded = ((CatRepository) this.getServletContext().getAttribute("cats")).addCat(cat);
-
-        if (isAdded) {
+        if (cat != null) {
             resp.sendRedirect("/cats/profile?catName=" + cat.getName());
         } else {
             resp.sendRedirect("/");
         }
     }
 
-    private User getCurrentUser(final HttpServletRequest req) {
-        return ((UserRepository) this.getServletContext().getAttribute("users"))
-                .getByUsername((String) req.getSession().getAttribute("username"));
+    private Cat createCat(final HttpServletRequest req) {
+        final Cat cat = new Cat(
+                req.getParameter("name"),
+                req.getParameter("breed"),
+                req.getParameter("color"),
+                Integer.parseInt(req.getParameter("legs")),
+                LoggedUser.get(req));
+
+        return ((CatRepository) this.getServletContext().getAttribute("cats")).addCat(cat)
+                ? cat : null;
     }
 
     private boolean isRequestValid(final HttpServletRequest req) {

@@ -2,6 +2,7 @@ package fdmc.servlets.cats;
 
 import fdmc.data.models.Cat;
 import fdmc.data.repositories.CatRepository;
+import fdmc.util.LoggedUser;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,9 +19,12 @@ public final class CatProfileServlet extends HttpServlet {
         final Cat cat = ((CatRepository) this.getServletContext().getAttribute("cats"))
                 .getByName(req.getParameter("catName"));
 
-        if (cat != null) {
-            cat.increaseViews();
+        if (cat == null || !LoggedUser.isPresent(req)) {
+            resp.sendRedirect("/");
+            return;
         }
+
+        cat.increaseViews();
 
         req.getRequestDispatcher("/WEB-INF/jsp/cats/profile.jsp").forward(req, resp);
     }
