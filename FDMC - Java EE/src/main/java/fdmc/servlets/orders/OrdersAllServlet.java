@@ -16,7 +16,7 @@ public final class OrdersAllServlet extends HttpServlet {
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         final User user = ((UserRepository) this.getServletContext().getAttribute("users"))
-                .getByUsername(req.getSession().getAttribute("username").toString());
+                .getByUsername((String) req.getSession().getAttribute("username"));
 
         if (user == null || !user.isAdmin()) {
             resp.sendRedirect("/");
