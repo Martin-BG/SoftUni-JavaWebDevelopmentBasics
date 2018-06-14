@@ -24,7 +24,7 @@ public final class Order {
     }
 
     public LocalDateTime getMadeOn() {
-        return this.madeOn;
+        return LocalDateTime.of(this.madeOn.toLocalDate(), this.madeOn.toLocalTime());
     }
 
     @Override
