@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--NOTE - implemented BindingResult (errors) class-->
+<head>
+    <meta charset="UTF-8">
+    <title>MeTube</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+<div class="container-fluid">
+    <h1>An error has occurred while processing your request</h1>
+    <h2>See th errors below</h2>
+    <hr/>
+    <div class="jumbotron bg-danger text-white font-weight-bold">
+        <ul>
+            ${errors}
+        </ul>
+    </div>
+</div>
+</body>
+</html>
