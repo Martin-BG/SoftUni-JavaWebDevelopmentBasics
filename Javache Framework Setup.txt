@@ -1,0 +1,44 @@
+javache - web server
+	src: src
+	resources: none
+	lib: soletapi.jar, summer.jar
+	artifact: javache.jar 
+		[org/softuni/javache/ + api, http & io directory contents]
+	target/classes:
+		/lib: broccolina.jar, toyote.jar
+		/config: config.ini [request-handlers: broccolina,toyote]
+		/logs: *empty
+		/webapps: for applications deployment (ex. ROOT.jar)
+		run.bat [java org/softuni/StartUp]
+	
+broccolina - solet(servlet) container and request handler; 
+			app loader, session manager, solet dispatcher
+	src: src
+	resources: none
+	lib: javache.jar
+	artifacts: 
+		broccolina.jar ['broccolina' compile output]
+		soletapi.jar [org/softuni/brocollina/solet 
+		+ 'solet' directory contents (out/production/broccolina/org/softuni/broccolina/solet)]
+
+toyote - resource handler
+	src: src
+	resources: none
+	lib: javache.jar
+	artifact: toyote.jar ['toyote' compile output]
+	
+summer - web framework; 
+		template engine, controller loading & action invoker
+	src: src
+	resources: none
+	lib: javache.jar, soletapi.jar
+	artifact: summer.jar ['summer' compile output]
+	
+app - web application
+	src: src/main
+	resources: src/resources
+	lib: javache.jar, soletapi.jar, summer.jar
+	artifact: ROOT.jar 
+		- /classes - 'app' compile output
+		- /lib - 'lib' directory contents
+		- /resources - 'resources' directory contents
